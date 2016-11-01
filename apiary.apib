@@ -1,0 +1,84 @@
+FORMAT: 1A
+HOST: https://testapi.starship.xyz/
+
+# Delivery API
+
+Create and confirm deliveries
+
+## Deliveries [/deliveries]
+
+### Offer delivery [POST]
+
++ Request (application/json)
+
+    + Attributes
+
+
+        + from (object, required) - Pickup location. Loading areas need setup, before they can be used through API.
+            + loadingarea: loading area id (string, required) 
+
+        + to (object, required) - Address for delivery
+            + address: Random Street 2 (string, required)
+            + address2: Apt 64 (string, optional)
+            + city: London (string, required)
+            + zip: AR52 (string, required)
+            + country: UK (string, required)
+            
+        + recipient (object, required)
+            + name: Jane Doe (string, required)
+            + phone: +441234567889 (string, required) - Mobile phone number
+            
+        + parcel (object, required)
+            + description: Pizza (string, optional) - What is inside?
+            + reference: CFG345 (string, required) - Your delivery id
+            
+        + due (object, optional) - Delivery time slot
+            + start: `2017-08-08T12:15:00Z` (string, required) - Start of dtime slot
+            + end: `2017-08-08T12:30:00Z` (string, required) - End of time slot
+
+            
++ Response 201
+
+    + Body
+    
+            {
+                "id": "abc123",
+                "status": "RESERVED"
+            }
+    
++ Response 400
+
+    + Body
+    
+            {
+                "code": "no_robots",
+                "reason": "No available robots"
+            }
+
+    
+## Confirm delivery [/deliveries/{id}/confirm]
+
+### Confirm delivery [POST]
+
+2 minutes to confirm a reserved delivery. After that the reservation is canceled.
+
++ Parameters
+    + id - Id from response of delivery request
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "id": "abc123",
+                "status": "CONFIRMED"
+            }
+            
++ Response 400 (application/json)
+
+    + Body
+
+            {
+                "reason": "Delivery not found or not RESERVED"
+            }
