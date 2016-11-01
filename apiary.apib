@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: https://api.starship.xyz/
+HOST: https://api.starship.xyz
 
 # Delivery API
 
@@ -7,7 +7,7 @@ Reserve and confirm robot deliveries. All requests need to include AccountSid an
 
 # Group Deliveries
 
-## Deliveries [/deliveries]
+## /deliveries
 
 ### Make delivery reservation [POST]
 
@@ -16,11 +16,11 @@ Returns 201 status code on success. Successful reservation is valid for 2 minute
 Returns 400 on rejection, along with response body containing reason
 
 
- * no_robots
- * outside_hours
- * not_mapped
- * too_far
- * bad_request
+ + no_robots
+ + outside_hours
+ + not_mapped
+ + too_far
+ + bad_request
  
 + Request (application/json)
 
@@ -78,9 +78,9 @@ Returns 400 on rejection, along with response body containing reason
 
 
     
-## Deliveries [/deliveries/{id}]
+## /deliveries/{id}
 
-### Confirm reservation [POST]
+### Confirm delivery reservation [POST]
 
 Confirm previously made reservation
 
