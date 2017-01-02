@@ -1,7 +1,7 @@
 FORMAT: 1A
 HOST: https://api.starship.xyz
 
-# Delivery API
+# Booking API
 
 Get delivery slots, reserve and confirm robot deliveries. 
 
@@ -26,24 +26,11 @@ Get delivery slots, reserve and confirm robot deliveries.
         + days (string, optional) - Optional number of days to return slots for. Default 2
         + date: 2017-08-08 (string, optional) - Optional date to return slots from
         
-        + address (object, required) - Customer address and contact
-            + address: Random Street 2 (string, required)
-            + address2: Apt 64 (string, optional)
-            + city: London (string, required)
-            + zip: AR52 (string, required)
-            + country: UK (string, required)
-            + name: Jane Doe(string, required)
-            + phone: +441234567889 (string, required)
+        + customer (Customer info)
             
         + parcel (object, required) - Parcel information
-            + dimensions (object)
-                + unit: mm (string) Supported values: mm, in
-                + width: 210 (number, optional) 
-                + height: 200 (number, optional) 
-                + length: 400 (number, optional) 
-            + weight (object) Supported values: g, lbs
-                + unit: g (string) 
-                + value: 600 (number)
+            + dimensions (Parcel dimensions)
+            + weight (Parcel weight)
        
             
 + Response 201 (application/json)
@@ -119,27 +106,14 @@ Returns 400 on rejection, along with response body containing reason
         + from (object, required) - Pickup location. Loading areas need to be configured before use
             + loadingarea: loading area id (string, required) 
 
-        + to (object, required) - Address for delivery
-            + address: Random Street 2 (string, required)
-            + address2: Apt 64 (string, optional)
-            + city: London (string, required)
-            + zip: AR52 (string, required)
-            + country: UK (string, required)
-            + name: Jane Doe(string, required)
-            + phone: +441234567889 (string, required)
+        + to (Customer info)
 
         + parcel (object, required)
             + description: Pizza (string, optional) - What's inside?
             + reference: CFG345 (string, required) - Order/delivery id in partner system
-            + dimensions (object, optional)
-                + unit: mm (string, required) - supported units: mm, in
-                + width: 210 (number, required) 
-                + height: 200 (number, required)
-                + length: 400 (number, required)
-            + weight (object, optional)
-                + unit: mm (string) - supported units: mm, in
-                + weight: 600 (number, required) - value
-            
+            + dimensions (Parcel dimensions)
+            + weight (Parcel weight)
+
         + due: 2017-08-08T13:00:00Z/13:15, (string, optional) - ISO 8601 formatted Delivery time slot
            
 
@@ -236,3 +210,32 @@ Cancel previously created delivery
                 "code": "not_found",
                 "reason": "Delivery not found or already completed"
             }
+            
+            
+# Data Structures
+
+## Customer info (object)
++ address: Random Street 2 (string, required)
++ address2: Apt 64 (string, optional)
++ city: London (string, required)
++ zip: AR52 (string, required)
++ country: UK (string, required)
++ name: Jane Doe(string, required)
++ phone: +441234567889 (string, required)
+
+## Parcel dimensions (object)
+
++ unit: mm (string, required)
+    Supported units: mm, in
+    
++ width: 210 (number, required) 
++ height: 200 (number, required)
++ length: 400 (number, required)
+
+
+## Parcel weight (object)
+
++ unit: mm (string, required)
+    Supported units: g, lbs
+    
++ value: 500 (number, required)
