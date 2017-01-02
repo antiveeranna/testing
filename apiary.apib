@@ -3,8 +3,92 @@ HOST: https://api.starship.xyz
 
 # Delivery API
 
-Reserve and confirm robot deliveries. All requests need to include AccountSid and AuthToken headers
+Get delivery slots, reserve and confirm robot deliveries. 
 
+* All requests need to include AccountSid and AuthToken headers provided by Starship.
+* Availability days and hours are configured by Starship
+
+## Delivery slots [/slots]
+
+### Retrieve list of possible slots [POST]
+
+* Customer information has to be passed in, because amount of slots depends on drive distance
+* Parcel information has to be passed in, because different robots have different capabilities
+
++ Request (application/json)
+
+    + Headers
+    
+            AccountSid: 370360ee-ca25-4b1a-9df7-1d625d601d37
+            AuthToken: ac6f3815-c19d-467b-9768-41810f493c5c
+            
+    + Attributes
+        + days (string, optional) - Optional number of days to return slots for. Default 2
+        + date: 2017-08-08 (string, optional) - Optional date to return slots from
+        
+        + address (object, required) - Customer address and contact
+            + address: Random Street 2 (string, required)
+            + address2: Apt 64 (string, optional)
+            + city: London (string, required)
+            + zip: AR52 (string, required)
+            + country: UK (string, required)
+            + name: Jane Doe(string, required)
+            + phone: +441234567889 (string, required)
+            
+        + parcel (object, required) - Parcel information
+            + dimensions (object)
+                + unit: mm (string) Supported values: mm, in
+                + width: 210 (number, optional) 
+                + height: 200 (number, optional) 
+                + length: 400 (number, optional) 
+            + weight (object) Supported values: g, lbs
+                + unit: g (string) 
+                + value: 600 (number)
+       
+            
++ Response 201 (application/json)
+    Returns status 201 and array of ISO 8601 formatted time intervals 
+    or status 400 and an error code
+    
+    Possible error codes
+    
+    | Code      | Explanation         |
+    |-----------|---------------------|
+    | no_slots  | No available slots |
+    | no_robots | No available robots |
+    | outside_hours | Outside working hours |
+    | not_mapped | Route is not mapped yet |
+    | too_far | Route is too long for robot delivery |
+    | invalid_phone | Missing or invalid phone number |
+    | parcel_too_big | Parcel would not fit into the robot  |
+    | parcel_too_heavy | Parcel is too heavy to be carried by robot  |
+    | bad_request | Invalid/missing data |
+    
+
+    + Body
+    
+            [
+                '2017-01-11T13:00:00Z/13:15',
+                '2017-01-11T14:00:00Z/14:15',
+                '2017-01-11T15:00:00Z/15:15',
+                '2017-01-12T10:00:00Z/10:15',
+                '2017-01-12T11:00:00Z/11:15'
+            ]
+
++ Response 400 (application/json)
+
+    Returned when no slots are available. 
+    
+    + Body
+    
+            {
+                "code": "no_slots",
+                "reason": "No available slots"
+            }
+
+    
+    
+            
 # Group Deliveries
 
 ## /deliveries
@@ -15,12 +99,13 @@ Returns 201 status code on success. Successful reservation is valid for 2 minute
 
 Returns 400 on rejection, along with response body containing reason
 
-
- + no_robots
- + outside_hours
- + not_mapped
- + too_far
- + bad_request
+| Code      | Explanation         |
+|-----------|---------------------|
+| no_robots | No available robots |
+| outside_hours | Outside working hours |
+| not_mapped | Route is not mapped yet |
+| too_far | Route is too long for robot delivery |
+| bad_request | Invalid/missing data |
  
 + Request (application/json)
 
@@ -40,20 +125,24 @@ Returns 400 on rejection, along with response body containing reason
             + city: London (string, required)
             + zip: AR52 (string, required)
             + country: UK (string, required)
-            
-        + recipient (object, required)
-            + name: Jane Doe (string, required)
-            + phone: +441234567889 (string, required) - Mobile phone number
-            
+            + name: Jane Doe(string, required)
+            + phone: +441234567889 (string, required)
+
         + parcel (object, required)
             + description: Pizza (string, optional) - What's inside?
-            + reference: CFG345 (string, required) - Order/delivery id in 
+            + reference: CFG345 (string, required) - Order/delivery id in partner system
+            + dimensions (object, optional)
+                + unit: mm (string, required) - supported units: mm, in
+                + width: 210 (number, required) 
+                + height: 200 (number, required)
+                + length: 400 (number, required)
+            + weight (object, optional)
+                + unit: mm (string) - supported units: mm, in
+                + weight: 600 (number, required) - value
             
-        + due (object, optional) - Delivery time slot
-            + start: `2017-08-08T12:15:00Z` (string, required) - Start
-            + end: `2017-08-08T12:30:00Z` (string, required) - End
+        + due: 2017-08-08T13:00:00Z/13:15, (string, optional) - ISO 8601 formatted Delivery time slot
+           
 
-            
 + Response 201
 
     + Body
@@ -80,9 +169,9 @@ Returns 400 on rejection, along with response body containing reason
     
 ## /deliveries/{id}
 
-### Confirm delivery reservation [POST]
+### Confirm delivery [POST]
 
-Confirm previously made reservation
+Confirm previously created delivery
 
 + Parameters
     + id - Id from response of reservation request
@@ -112,5 +201,38 @@ Confirm previously made reservation
     + Body
 
             {
+                "code": "not_found",
                 "reason": "Delivery not found or not RESERVED"
+            }
+            
+### Cancel delivery [DELETE]
+
+Cancel previously created delivery
+
++ Parameters
+    + id - Delivery id
+    
++ Request (application/json)
+
+     + Headers
+     
+            AccountSid: 370360ee-ca25-4b1a-9df7-1d625d601d37
+            AuthToken: ac6f3815-c19d-467b-9768-41810f493c5c
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "id": "abc123",
+                "status": "DELETED"
+            }
+            
++ Response 400 (application/json)
+
+    + Body
+
+            {
+                "code": "not_found",
+                "reason": "Delivery not found or already completed"
             }
