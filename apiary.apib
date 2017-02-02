@@ -75,7 +75,7 @@ this means
             + weight (Parcel weight)
        
             
-+ Response 201 (application/json)
++ Response 200 (application/json)
     Returns status 200 and array of ISO 8601 formatted time intervals 
     or status 400 and an error code
     
@@ -159,7 +159,7 @@ Returns 400 on rejection, along with response body containing reason
     + Attributes
 
         + from (object, required) - Pickup location. Loading areas need to be configured before use
-            + loadingarea: loading area id (string, required) 
+            + loadingarea: loading area id (string) 
 
         + to (Customer info)
 
