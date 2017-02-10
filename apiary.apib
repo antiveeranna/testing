@@ -158,9 +158,8 @@ Returns 400 on rejection, along with response body containing reason
 
     + Attributes
 
-        + from (object, required) - Pickup location. Loading areas need to be configured before use
-            + loadingarea: loading area id (string) 
-
+        + from (Loading area info)
+        
         + to (Customer info)
 
         + parcel (object, required)
@@ -279,7 +278,7 @@ Cancel previously created delivery
 + address2: Apt 64 (string, optional)
 + city: London (string, required)
 + zip: AR52 (string, required)
-+ country: UK (string, required)
++ country: UK (string, required) 2-letter country code
 + name: Jane Doe(string, required)
 + phone: +441234567889 (string, required) Mobile phone number 
 
@@ -289,7 +288,7 @@ Cancel previously created delivery
 + address2: Apt 64 (string, optional)
 + city: London (string, optional)
 + zip: AR52 (string, optional)
-+ country: UK (string, optional)
++ country: UK (string, optional) 2-letter country code
 + name: Random Parcel Shop(string, optional)
 + phone: +449454545 (string, optional) Mobile phone number 
 
